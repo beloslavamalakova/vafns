@@ -1,0 +1,13 @@
+pandas
+numpy
+torch
+sklearn
+matplotlib
+torchvision
+tensorboardX
+gym
+
+ipdb
+pylint
+isort
+black
