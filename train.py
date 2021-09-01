@@ -77,7 +77,7 @@ def parse_arguments(args_to_parse):
         default=0,
         help="Number of annealing steps for KL weight."
     )
-    parser.add_argument("--num-epochs", type=int, default=50, help="Number of epochs.") 
+    parser.add_argument("--num-epochs", type=int, default=50, help="Number of epochs.")
     parser.add_argument("--lr", type=float, default=0.0005, help="Learning rate.")
     parser.add_argument(
         "--max-grad-norm", type=float, default=1.0, help="Maximum gradient norm."
