@@ -20,7 +20,7 @@ class Dataset():
     else:
         return x
 
-  table_yc= pd.read_html('beloslava/Projects/AFNS/fs_yc.html')
+  table_yc= pd.read_html('beloslava/Projects/vafns/fs_yc.html')
   print(tables_yc.head(5))
 
   table_yc = table_yc.applymap(clean_normalize_whitespace)
