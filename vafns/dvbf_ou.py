@@ -161,32 +161,6 @@ class TransitionModel(nn.Module): #abstract class for Transition Models; all sho
         """
         pass
 
-class LocallyLinearTransitionModel(TransitionModel):
-    def __init__(self, num_matrices, latent_dim, action_dim, noise_dim, hidden_size=16, **kwargs):
-        super().__init__(
-            latent_dim=latent_dim, action_dim=action_dim, noise_dim=noise_dim
-        )
-
-        self.num_matrices = num_matrices
-
-        self.latent_matrix = nn.Parameter(
-            torch.randn(num_matrices, latent_dim, latent_dim) * (1.0 / latent_dim)
-        )
-        self.action_matrix = nn.Parameter(
-            torch.randn(num_matrices, action_dim, latent_dim)
-            * (1.0 / math.sqrt(latent_dim * action_dim))
-        )
-        self.noise_matrix = nn.Parameter(
-            torch.randn(num_matrices, noise_dim, latent_dim)
-            * (1.0 / math.sqrt(latent_dim * noise_dim))
-        )
-
-        self.net = nn.Sequential(
-            nn.Linear(eatent_dim + action_dim, hidden_size),
-            nn.ReLU(),
-            nn.Linear(hidden_size, num_matrices),
-            nn.Softmax(),
-        )
 
     # GENERAL NOTES: torch; process is in the latent space; linear layer mapping latent/action/noise to the hidden size
     # 1) parametrizing over more than an x;

@@ -13,7 +13,7 @@ from sklearn.metrics import mean_absolute_error
 from unicodedata import normalize
 
 
-class Dataset():
+class Dataloader():
   def clean_normalize_whitespace(x):
     if isinstance(x, str):
         return normalize('NFKC', x).strip()
@@ -46,7 +46,7 @@ class Dataset():
   table_yc = table_yc.replace(clean_dict, regex=True).replace({'-n/a ': np.nan}).astype(col_type)
 
 
-class Dataloader():
+
   def __init__(self, table_yc, t):
         super(Dataloader, self).__init__()
 
@@ -74,7 +74,7 @@ class Dataloader():
         raise TypeError("Index must be within the range of t")
 
 
-def main():
+  def main():
     values = file_out.values
     values = values.reshape((len(values), 1))
     scaler = StandardScaler()
@@ -105,5 +105,3 @@ def main():
             return -np.log(1 - yHat)
 
 
-if __name__ == "__main__":
-    main()

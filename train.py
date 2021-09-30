@@ -2,13 +2,12 @@ import sys
 import argparse
 from collections import defaultdict
 
-import gym
 import tensorboardX
 import torch
 
-import dvbf.utils as utils
-from dvbf.bayes_filter import BayesFilter, get_transition_model
-from dvbf.data_loader import GymEpisodes
+import vafns.utils as utils
+from vafns.dvbf_ou import BayesFilter, get_transition_model
+from vafns.data_kaggle import Dataloader
 
 
 def parse_arguments(args_to_parse):
@@ -84,15 +83,9 @@ def parse_arguments(args_to_parse):
     )
     parser.add_argument(
         "--transition-model",
-        choices=["locally_linear"],
-        default="locally_linear",
-        help="Type of latent transition model.",
-    )
-    parser.add_argument(
-        "--num-matrices",
-        type=int,
-        default=6,
-        help="Number of matrices in Locally linear transiton model.",
+        choices=["OrnsteinUhlenbeck"],
+        default="OrnsteinUhlenbeck",
+        help="Type of transition model.",
     )
     args = parser.parse_args(args_to_parse)
     return args
@@ -132,11 +125,10 @@ def main(args):
 
     net.to(device)
 
-    episodes = GymEpisodes(
-        env,
-        args.seq_length,
-        num_episodes=args.num_episodes,
-        max_len=args.max_episode_length,
+    episodes = Dataloader(
+        kaggle,
+        split,
+        cols,
     )
 
     optimizer = torch.optim.Adam(net.parameters(), lr=args.lr, weight_decay=1e-5)
