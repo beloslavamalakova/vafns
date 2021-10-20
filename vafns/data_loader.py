@@ -21,7 +21,7 @@ class Dataloader():
         return x
 
   table_yc= pd.read_html('beloslava/Projects/vafns/fs_yc.html')
-  print(tables_yc.head(5))
+  print(fs_yc.head(5))
 
   table_yc = table_yc.applymap(clean_normalize_whitespace)
   table_yc.columns = table_yc.columns.to_series().apply(clean_normalize_whitespace)
