@@ -2,6 +2,7 @@
 import torch
 import torchvision
 from torch.utils.data import Dataset, DataLoader, ConcatDataset
+from   sklearn.preprocessing  import StandardScaler #main?
 import numpy as np
 import math
 
@@ -20,12 +21,15 @@ class Dataset(object):
     def __add__(self, other):
         return ConcatDataset([self, other])
 
+#reverse/inverse normalize when outputting inverse_transform(); 
 
-#Dataset - location; initializing, reading the dataset with numpy
+
+#dataset class,  labels==inputs[t+1]
 class YieldCurves(Dataset):
 
-    def __init__(self):
+    def __init__(self, t):
 
+        self.t=t
         xy=np.loadtxt('/home/beloslava/Projects/vafns/kaggle.csv', delimiter=',', dtype=np.float32, skiprows=1)
         self.n_samples= xy.shape[0]
         self.x_data=torch.from_numpy(xy[:, 1:])
@@ -39,10 +43,24 @@ class YieldCurves(Dataset):
 
 #creating the dataset
 dataset = YieldCurves()
-
+dataset.head(5)
 
 first_data =dataset[0]
 features, labels = first_data
 print(features, labels)
 
-#create the dataloader !do not forget -- shuffle=False
+
+def main():
+    device: torch.device
+
+# checking for auto-correlation errors;
+
+
+# outlier process- filtering out the top and bottom 2% of the data; 
+
+#cross-entropy= entropy plus KL-divergence;
+
+# normalizing and rescaling [0:1]; splitting the dataset 90/10, train_test_split-- shuffle=False
+
+if __name__ == "__main__":
+    main()
