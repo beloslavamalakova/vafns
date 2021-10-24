@@ -1,49 +1,55 @@
-#for the kaggle dataset 
 import torch
 import torchvision
-from torch.utils.data import Dataset, DataLoader, ConcatDataset
-from   sklearn.preprocessing  import StandardScaler #main?
+from torch.utils.data import Dataset, DataLoader
+from   sklearn.preprocessing  import StandardScaler
 import numpy as np
+import pandas as pd
 import math
+import matplotlib as plt
 
 use_cuda = torch.cuda.is_available()
 device = torch.device("cuda:0" if use_cuda else "cpu")
 
-#dataset class,  labels==inputs[t+1] - numpy steps for t 
-#the dataset to be a relative address (../kaggle.csv)
 class YieldCurves(Dataset):
 
-    def __init__(self, t):
+    def __init__(self, t): #to decide the agrs
+        super.__init__()
 
+        kaggle= pd.read_csv("../kaggle.csv", parse_dates=['date'], index_col='date')
+        kaggle['Date'] = pd.to_datetime(kaggle['Date'])
+        kaggle = kaggle.set_index('Date')
+
+        kaggle_yields = kaggle['1 yr':'30YR']
+
+        self.x=(dataset[1:, :])
+        self.y=(dataset[[1-2]:, :])
         self.t=t
-        xy=np.loadtxt('../kaggle.csv', delimiter=',', dtype=np.float32, skiprows=1)
-        self.n_samples= xy.shape[0]
-        self.x_data=torch.from_numpy(xy[:, 1:])
-        self.y_data=torch.from_numpy(xy[:, [0]]) #n_samples, 1
-        #transcribe the dataset to a numeric value
-        #panda data class to such object or helper function split by - year, month, date ("1977-03-01".split('-')[0])
 
     def __getitem__(self, index):
-        return self.x_data[index], self.y_data[index]
+        return self.x[index], self.y[index]
+
+    def __getitem__(self, ):
+        return self.
 
     def __len__ (self):
-        return self.n_samples
+        return self.
 
-#creating the dataset
+    def time(self, t):
+        labels==inputs[t+1]
+
 dataset = YieldCurves()
-dataset.head(5)
-
-first_data =dataset[0]
-features, labels = first_data
-print(features, labels)
-
+dataset.head(3)
 
 def main():
+
     device: torch.device
 
-# checking for auto-correlation errors;
+    plt.figure(figsize=(11,4), dpi= 80)
+    pd.plotting.autocorrelation_plot(data.loc['1997-03-01': '2019-09-01', 'Yield Curves'])
+    
+    # outlier process- filtering out the top and bottom 2% of the data; init
 
-# outlier process- filtering out the top and bottom 2% of the data; init
+
 
 # cross-entropy= default function 
 
