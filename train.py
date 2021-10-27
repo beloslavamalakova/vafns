@@ -2,14 +2,16 @@ import sys
 import argparse
 from collections import defaultdict
 
+from torch.utils.data.dataset import Dataset
+
 import tensorboardX
 import torch
 
 import vafns.utils as utils
 from vafns.dvbf_ou import BayesFilter, get_transition_model
-from vafns.data_kaggle import Dataloader
+from vafns.dataloader import Dataloader
 
-
+#environment ; adapt train 
 def parse_arguments(args_to_parse):
     """Parse command line arguments
     Args:
@@ -125,8 +127,8 @@ def main(args):
 
     net.to(device)
 
-    episodes = Dataloader(
-        kaggle,
+    episodes = Dataset(
+        t,
         split,
         cols,
     )

@@ -5,6 +5,7 @@ import pandas as pd
 import torch.nn as nn
 import matplotlib.pyplot as plt
 
+
 class YieldCurves(Dataset):
 
     def __init__(self, num_predictions, test, t): 
@@ -18,26 +19,29 @@ class YieldCurves(Dataset):
         self.test=test
         self.t=t
 
-        #self.yields -- all the yields; 
-        yields=kaggle['1 yr':'30YR']
         yields=self.yields
+        yields=kaggle[['Date'-'30YR']:, :]
 
-        # num_predictions -- how many steps ahead to predict --1 or 2
+        #new datasets
+        
+        #std y_train = StandardScaler.transform(self.y)
+
+        # num_predictions -- how many steps ahead to predict --1 or 2; predictionite-the following num predictions
+        num_predictions=1
+        num_predictions=num_predictions+1
 
         #default value test=false, if true another dataset, train_test_split
-
-        #self.x=(dataset[1:, :])
-        #self.y=(dataset[[1-2]:, :])
-
-        x_train = self.x
-        y_train = StandardScaler.transform(self.y)
+        if test == False:
+            return 
+        else:
+            return 
 
     def __len__ (self):
         return self.len(self.yields-self.t-self.num_predictions)
 
-    #getitem ot index do index pkus t; index +t+num_predictions+1 -- x pyrwite t; predictionite-the following num predictions
+    #getitem ot index do index pkus t; index +t+num_predictions+1 -- x pyrwite t; 
     def __getitem__(self, index):
-        if index + self.t < len():
+        if index + self.t < len(self.yields):
            return self.y_train[index : index + self.t], self.x_train[index : index + self.t]
         else:
            raise TypeError("Index must be within the range of t")
@@ -55,7 +59,7 @@ def main():
     #TODO outlier process- filtering out the top and bottom 2% of the data; init
     
     criterion = nn.CrossEntropyLoss()
-    loss = criterion() #the args in the parenthesis
+    loss = criterion() #the args in the parenthesis-- output target -- test, train
     print(loss)
 
 if __name__ == "__main__":
