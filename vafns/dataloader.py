@@ -4,7 +4,6 @@ from   sklearn.preprocessing  import StandardScaler
 import pandas as pd
 import torch.nn as nn
 import matplotlib.pyplot as plt
-from sklearn.model_selection import train_test_split
 
 
 class YieldCurves(Dataset):
@@ -24,8 +23,12 @@ class YieldCurves(Dataset):
 
         num_predictions=1
 
-        train=self.yields[:int(len(self.yields)*0.9)]
-        validation=self.yields[-int(len(self.yields)*0.1):]
+        self.train=self.yields[:int(len(self.yields)*0.95)]
+        self.validation=self.yields[-int(len(self.yields)*0.05):]
+
+        train=StandardScaler.transform(self.train)
+        validation=StandardScaler.transform(self.validation)
+
 
         if test == False:
             return 
@@ -34,7 +37,7 @@ class YieldCurves(Dataset):
 
         #TODO outlier process- filtering out the top and bottom 2% of the data
 
-        #std y_train = StandardScaler.transform(self.y)
+
 
 
     def __len__ (self):
@@ -58,7 +61,7 @@ def main():
     pd.plotting.autocorrelation_plot(dataset.loc['1997-03-01': '2019-09-01', '1yr':'30YR'])
  
     criterion = nn.CrossEntropyLoss()
-    loss = criterion() #output target -- test, train
+    loss = criterion()
     print(loss)
 
 

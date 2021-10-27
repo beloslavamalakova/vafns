@@ -1,5 +1,5 @@
 import pandas as pd
-from pandas import read_csv
+from pandas import read_html
 import numpy as np
 import matplotlib as plt
 from sklearn.preprocessing import MinMaxScaler, StandardScaler
@@ -12,6 +12,9 @@ from sklearn.svm import OneClassSVM
 from sklearn.metrics import mean_absolute_error
 from unicodedata import normalize
 
+# labels === inputs[t+1]; normalize data with zero mean and unit variance; reverse/inverse normalize when outputting #inverse_transform(); checking for auto-correlation errors;
+# outlier process- filtering out the top and bottom 2% of the data; normalizing and rescaling [0:1]; splitting the dataset 90/10; cross-entropy= entropy plus KL-divergence;
+#  train_test_split-- shuffle=False; html parser
 
 class Dataloader():
   def clean_normalize_whitespace(x):
@@ -20,8 +23,8 @@ class Dataloader():
     else:
         return x
 
-  table_yc= pd.read_html('beloslava/Projects/vafns/fs_yc.html')
-  print(fs_yc.head(5))
+  table_yc= pd.read_html('../fs_yc.html')
+  print(table_yc.head(5))
 
   table_yc = table_yc.applymap(clean_normalize_whitespace)
   table_yc.columns = table_yc.columns.to_series().apply(clean_normalize_whitespace)
@@ -50,7 +53,9 @@ class Dataloader():
   def __init__(self, table_yc, t):
         super(Dataloader, self).__init__()
 
+        
         self.t = t
+        self.table_yc=table_yc
         file_out = pd.read_csv(table_yc, header=0, index_col=0)
         x = file_out.iloc[:, 1].values
         y = file_out.iloc[:, [2, 12]].values
@@ -75,6 +80,7 @@ class Dataloader():
 
 
   def main():
+    dataset=DataLoader()
     values = file_out.values
     values = values.reshape((len(values), 1))
     scaler = StandardScaler()
