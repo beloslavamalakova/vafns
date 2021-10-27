@@ -1,17 +1,13 @@
 import torch
-from torch.utils.data import Dataset, DataLoader
+from torch.utils.data import Dataset
 from   sklearn.preprocessing  import StandardScaler
 import pandas as pd
 import torch.nn as nn
-import matplotlib as plt
 import matplotlib.pyplot as plt
 
 class YieldCurves(Dataset):
 
     def __init__(self, num_predictions, test, t): 
-        #TODO test defauld value = False; train test split if test=true, self.x; else self.x ...
-        #self.yields -- all the yields; num_predictions -- how many steps ahead to predict --1 or 2
-        #getitem ot index do index pkus t; index +t+num_predictions+1 -- x pyrwite t; predictionite-the following num predictions
         super.__init__()
 
         kaggle= pd.read_csv("../kaggle.csv", parse_dates=['date'], index_col='date')
@@ -22,10 +18,14 @@ class YieldCurves(Dataset):
         self.test=test
         self.t=t
 
-        yields = kaggle['1 yr':'30YR']
+        #self.yields -- all the yields; 
+        yields=kaggle['1 yr':'30YR']
         yields=self.yields
 
-        #default value test=false, if true another dataset
+        # num_predictions -- how many steps ahead to predict --1 or 2
+
+        #default value test=false, if true another dataset, train_test_split
+
         #self.x=(dataset[1:, :])
         #self.y=(dataset[[1-2]:, :])
 
@@ -33,9 +33,9 @@ class YieldCurves(Dataset):
         y_train = StandardScaler.transform(self.y)
 
     def __len__ (self):
-        return self.kaggle
-        #len(self.yields)-t-num_predictions
+        return self.len(self.yields-self.t-self.num_predictions)
 
+    #getitem ot index do index pkus t; index +t+num_predictions+1 -- x pyrwite t; predictionite-the following num predictions
     def __getitem__(self, index):
         if index + self.t < len():
            return self.y_train[index : index + self.t], self.x_train[index : index + self.t]
@@ -57,8 +57,6 @@ def main():
     criterion = nn.CrossEntropyLoss()
     loss = criterion() #the args in the parenthesis
     print(loss)
-
-    #TODO splitting the dataset 90/10, train_test_split-- shuffle=False
 
 if __name__ == "__main__":
     main()
