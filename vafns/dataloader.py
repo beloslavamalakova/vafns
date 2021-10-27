@@ -20,17 +20,17 @@ class YieldCurves(Dataset):
         self.test=test
         self.t=t
 
-        yields=self.yields
-        yields=kaggle[['Date'-'30YR']:, :]
+        self.yields=kaggle[['Date'-'30YR']:, :]
 
         num_predictions=1
+
+        train=self.yields[:int(len(self.yields)*0.9)]
+        validation=self.yields[-int(len(self.yields)*0.1):]
 
         if test == False:
             return 
         else:
             return #if true another dataset?
-
-        #new datasets
 
         #TODO outlier process- filtering out the top and bottom 2% of the data
 
