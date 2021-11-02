@@ -106,7 +106,7 @@ class BayesFilter(nn.Module):
         dists = [initial_w] #dist of distribution
         for t in range(1, seq_len):
             noise_dist = self.inferece(
-                torch.cat([transition_parameters[t], z_t, u[t]], dim=-1) #into 1 dimension
+                torch.cat([transition_parameters[t], z_t, u_t], dim=-1) #into 1 dimension
             )
             dists.append(noise_dist) #noise distribution
             w_t = self.generate_samples(*noise_dist.split(2, dim=-1)) #as a given input
@@ -162,57 +162,33 @@ class TransitionModel(nn.Module): #abstract class for Transition Models; all sho
         pass
 
 
-    # GENERAL NOTES: torch; process is in the latent space; linear layer mapping latent/action/noise to the hidden size
-    # 1) parametrizing over more than an x;
-    # 2) embedding betta,
-    # 3) ornstein-uhlenbeck process - stochastic ODE Visicek (OU) process - using mu as a 0
-    # 4) hidden size to latent dim
-    # 5) return t+1 next state
+class OrnsteinUhlenbeckTransitionModel(TransitionModel):
+    def __init__(self, latent_dim, action_dim, noise_dim, hidden_size=16,**kwargs):
 
-    # POINTS UNSURE ABOUT
-    # what kind of function should the ornstein_uhlenbeck be?
-    # what is betta representing in the dvbf
-    # should the parametrization be done through alpha betta and gamma, and how is it connected to the value of betta in the dvbf
-    # change of the values -- sigma, mu, theta
-    # initialization of the parameters, should it be done in the __init__ or in the def forward function
+        super().__init__(latent_dim=latent_dim, action_dim=action_dim, noise_dim=noise_dim)
+        self.latent_dim=latent_dim
+        self.action_dim=action_dim
+        self.noise_dim=noise_dim
+        mu=0
+        theta=0.15
+        sigma=0.2
 
-
-class OrnsteinUhlenbeckTransitionModel(nn.Module):
-    def __init__(self, latent_dim, action_dim, noise_dim, betta, gamma, alpha, ornstein_uhlenbeck, hidden_size=16, mu=0, theta= 0.15, sigma = 0.2, **kwargs):
-        super().__init__()
-        self.latent_dim = latent_dim
-        self.action_dim = action_dim
-        self.noise_dim = noise_dim
-        self.mu = mu
-        self.theta = theta
-        self.sigma = sigma
-        self.ornstein_uhlenbeck = ornstein_uhlenbeck
-
-    def forward(self, latent, action, noise):
-
-        self.alpha = nn.Parameter(
-            torch.rndn(latent_dim) * self.mu)
-
-        self.betta = nn.Parameter(
-            torch.rndn(action_dim) * self.mu)
-
-        self.gamma = nn.Parameter(
-            torch.rndn(noise_dim) * self.mu)
-
-        x = self.Linear(aplha + betta + gamma, ornstein_uhlenbech)
-
-        def  ornstein_uhlenbeck(self):
+        def ornsteinuhlenbeck(self):
             dx = self.theta * (self.mu - self.x)
             dx = dx + self.sigma * torch.rndn(len(self.x))
             self.x = self.x + dx
             return self.x
 
-        self.net = Sequential(
+        self.net = nn.Sequential(
             nn.Linear(latent_dim + action_dim + noise_dim, hidden_size),
             nn.ReLU(),
             nn.Linear(hidden_size, latent_dim),
             nn.Softmax(),
-        )
+        )        
+
+    def forward():
+        pass
+
 
 
     @staticmethod

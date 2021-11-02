@@ -33,15 +33,10 @@ class YieldCurves(Dataset):
         max_value=1
         torch.clamp(train, min_value, max_value)
 
-        x= 
-        y= 
-
-        train_seq_len = t
-        target_seq_len = q
-        for i in range[]: 
-            return (x, y)
-
-        # function default values
+        a_n=3
+        x= 2
+        y= 1
+    
 
         if test == False:
             return 
@@ -56,13 +51,18 @@ class YieldCurves(Dataset):
     def __len__ (self):
         return self.len(self.yields-self.t-self.num_predictions)
 
+    def __getitem__(self, t, q, x, y):
+        a_n=3
+        train_seq_len = t
+        target_seq_len = q
+        for i in range(): 
+            return (x, y)
+
+
     def __getitem__(self, index):
         if index + self.t < len(self.yields):
             #return with torch.tensor
            return self.yields[index: index + self.t + self.num_predictions +1]
-           #why the type error
-        else:
-           raise TypeError("Index must be within the range of t")
 
 
 def main():
