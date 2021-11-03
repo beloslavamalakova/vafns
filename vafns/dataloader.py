@@ -46,7 +46,7 @@ class YieldCurves(Dataset):
         #TODO outlier process- filtering out the top and bottom 2% of the data
 
 
-#train set, test set, x values, target values
+    #train set, test set, x values, target values
 
     def __len__ (self):
         return self.len(self.yields-self.t-self.num_predictions)
