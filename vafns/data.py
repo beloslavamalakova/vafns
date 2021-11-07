@@ -55,12 +55,20 @@ class Fed(Dataset):
 
         train=StandardScaler.transform(train)
         validation=StandardScaler.transform(validation)
+
+        num_predictions= 1 #logical value??
+
+        min_value=0
+        max_value=1
+        torch.clamp(train, min_value, max_value)
         
+        #assigned values for a_n, x and y?
 
     def __len__(self):
         return self.len(self.yields-self.t-self.num_predictions)
 
     def __getitem__(self):
+        # a_n, x, y, train_seq_lenght, test_seq_lenght
         pass
 
 
@@ -70,6 +78,7 @@ def main():
     device = torch.device("cuda:0" if use_cuda else "cpu")
     
     dataset= Fed()
+    dataset.head()
 
 if __name__ == "__main__":
     main()
