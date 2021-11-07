@@ -64,6 +64,8 @@ class Fed(Dataset):
         
         #assigned values for a_n, x and y?
 
+        #if else for test boolean?
+
     def __len__(self):
         return self.len(self.yields-self.t-self.num_predictions)
 
