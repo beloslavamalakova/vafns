@@ -61,15 +61,16 @@ class Fed(Dataset):
         min_value=0
         max_value=1
         torch.clamp(train, min_value, max_value)
+        train=StandardScaler.transform(train)
         
         #assigned values for a_n, x and y?
 
-        #if else for test boolean?
+        #TODO if else for test boolean?
 
     def __len__(self):
-        return self.len(self.yields-self.t-self.num_predictions)
+        return len(self.yields-self.t-self.num_predictions)
 
-    def __getitem__(self):
+    def __getitem__(self, idx):
         # a_n, x, y, train_seq_lenght, test_seq_lenght
         pass
 
