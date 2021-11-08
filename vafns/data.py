@@ -30,7 +30,7 @@ class Fed(Dataset):
         col_type = {
             'Date': 'string',
             '1 mo': 'float',
-            '2 mo': 'int',
+            '2 mo': 'float',
             '3 mo': 'float',
             '6 mo': 'float',
             '1 yr': 'float',
@@ -44,9 +44,9 @@ class Fed(Dataset):
             }
 
 
-        def cleaning(yields):
-            clean_dict = {'%': '', '−': '-', '\(est\)': ''}
-            yields= yields.replace(clean_dict, regex=True).replace({'N/A': np.nan}).astype(col_type)
+        
+        clean_dict = {'%': '', '−': '-', '\(est\)': ''}
+        yields= yields.replace(clean_dict, regex=True).replace({'N/A': np.nan}).astype(col_type)
 
 
 
