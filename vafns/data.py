@@ -8,7 +8,7 @@ from sklearn.preprocessing import StandardScaler
 import matplotlib.pyplot as plt
 
 class Fed(Dataset):
-    def __init__(self, num_predictions, test, t):
+    def __init__(self, t, test=False, num_predictions=1):
 
         self.num_predictions=num_predictions
         self.test=test
@@ -50,31 +50,42 @@ class Fed(Dataset):
 
 
 
-        train=yields[:int(len(self.yields)*0.95)]
-        validation=yields[-int(len(self.yields)*0.05):]
+        self.train=yields[:int(len(self.yields)*0.95)]
+        self.validation=yields[-int(len(self.yields)*0.05):]
 
-        train=StandardScaler.transform(train)
-        validation=StandardScaler.transform(validation)
+        self.data=self.train
 
-        num_predictions= 1 #logical value??
 
-        min_value=0
+
+        self.train=StandardScaler.transform(self.train)
+        self.validation=StandardScaler.transform(self.validation)
+
+        min_value=0 #based on the percentages
         max_value=1
-        torch.clamp(train, min_value, max_value)
-        train=StandardScaler.transform(train)
-        
-        #assigned values for a_n, x and y?
 
-        #TODO if else for test boolean?
+        torch.clamp(self.train, min_value, max_value)
+        self.train=StandardScaler.transform(self.train)
+
+        #sequence of datas to be between min and max value, normalizing 
+        #to save somewehre the prior zero mean unit variance 
+        #write the unit variance zero mean through equation
+        #saving the values in
+        #function to denormalize, *std and to add the u -- 
+        
+
+        
+        if test:
+            self.data=self.validation
+        else:
+            self.data=self.train
+
 
     def __len__(self):
-        return len(self.yields-self.t-self.num_predictions)
+        return len(self.data-self.t-self.num_predictions)
 
     def __getitem__(self, idx):
-        # a_n, x, y, train_seq_lenght, test_seq_lenght
-        pass
-
-
+        return self.data[idx : idx + self.t], self.data[idx + self.t : idx + self.t + self.num_predictions]
+        
 
 def main():
     use_cuda = torch.cuda.is_available()
