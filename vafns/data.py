@@ -54,8 +54,8 @@ class Fed(Dataset):
         self.validation = (self.validation -
                            np.mean(self.validation)) / np.std(self.validation)
 
-        def denormalizing():
-            self.x = self.x * np.std(self.x) + np.mean(self.x)
+        def denormalizing(x):
+            x = x * np.std(x) + np.mean(x)
 
         min_value = 3
         max_value = 8
@@ -68,7 +68,7 @@ class Fed(Dataset):
         else:
             self.data = self.train
 
-        self.data=self.data(denormalizing)
+        self.data = self.data(denormalizing)
 
     def __len__(self):
         return len(self.data-self.t-self.num_predictions)
