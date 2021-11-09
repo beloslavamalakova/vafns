@@ -11,7 +11,9 @@ import vafns.utils as utils
 from vafns.dvbf_ou import BayesFilter, get_transition_model
 from vafns.dataloader import Dataloader
 
-#environment ; adapt train 
+# environment ; adapt train
+
+
 def parse_arguments(args_to_parse):
     """Parse command line arguments
     Args:
@@ -50,7 +52,8 @@ def parse_arguments(args_to_parse):
         default=256,
         help="Maximum length of an episode.",
     )
-    parser.add_argument("--batch-size", type=int, default=2, help="Minibatch size.")
+    parser.add_argument("--batch-size", type=int,
+                        default=2, help="Minibatch size.")
     parser.add_argument(
         "--latent-dim", type=int, default=4, help="Dimensionality of latent space."
     )
@@ -78,8 +81,10 @@ def parse_arguments(args_to_parse):
         default=0,
         help="Number of annealing steps for KL weight."
     )
-    parser.add_argument("--num-epochs", type=int, default=50, help="Number of epochs.")
-    parser.add_argument("--lr", type=float, default=0.0005, help="Learning rate.")
+    parser.add_argument("--num-epochs", type=int,
+                        default=50, help="Number of epochs.")
+    parser.add_argument("--lr", type=float, default=0.0005,
+                        help="Learning rate.")
     parser.add_argument(
         "--max-grad-norm", type=float, default=1.0, help="Maximum gradient norm."
     )
@@ -108,7 +113,8 @@ def main(args):
     logger.log("{}\n".format(args))
     utils.save_args(save_dir, args)
 
-    transition_model = get_transition_model(args.transition_model) #direktno kato function se polzwa
+    transition_model = get_transition_model(
+        args.transition_model)  # direktno kato function se polzwa
     transition_model = transition_model(**vars(args))
     net = BayesFilter(
         transition_model,
@@ -133,7 +139,8 @@ def main(args):
         cols,
     )
 
-    optimizer = torch.optim.Adam(net.parameters(), lr=args.lr, weight_decay=1e-5)
+    optimizer = torch.optim.Adam(
+        net.parameters(), lr=args.lr, weight_decay=1e-5)
 
     for e in range(args.epochs):
         epoch_logger = defaultdict(list)
@@ -149,7 +156,8 @@ def main(args):
             optimizer.zero_grad()
             loss.backward()
             epoch_logger["grad_norm"].append(utils.grad_norm(net))
-            torch.nn.utils.clip_grad_norm_(net.parameters(), args.max_grad_norm)
+            torch.nn.utils.clip_grad_norm_(
+                net.parameters(), args.max_grad_norm)
             optimizer.step()
 
         msg = "Epoch {} | ".format(e)
