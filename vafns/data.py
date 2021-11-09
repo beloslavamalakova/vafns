@@ -60,8 +60,8 @@ class Fed(Dataset):
         self.train=StandardScaler.transform(self.train)
         self.validation=StandardScaler.transform(self.validation)
 
-        min_value=0 #based on the percentages
-        max_value=1
+        min_value=3
+        max_value=8
 
         torch.clamp(self.train, min_value, max_value)
         self.train=StandardScaler.transform(self.train)
