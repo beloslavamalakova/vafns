@@ -42,12 +42,9 @@ class Fed(Dataset):
             '20 yr': 'float',
             '30 yr': 'float',
             }
-
-
         
         clean_dict = {'%': '', '−': '-', '\(est\)': ''}
         yields= yields.replace(clean_dict, regex=True).replace({'N/A': np.nan}).astype(col_type)
-
 
 
         self.train=yields[:int(len(self.yields)*0.95)]
@@ -55,7 +52,8 @@ class Fed(Dataset):
 
         self.data=self.train
 
-
+        self.train = (self.train - np.mean(self.train)) / np.std(self.train)
+        self.validation = (self.validation - np.mean(self.validation)) / np.std(self.validation)
 
         self.train=StandardScaler.transform(self.train)
         self.validation=StandardScaler.transform(self.validation)
@@ -66,9 +64,7 @@ class Fed(Dataset):
         torch.clamp(self.train, min_value, max_value)
         self.train=StandardScaler.transform(self.train)
 
-        #sequence of datas to be between min and max value, normalizing 
         #to save somewehre the prior zero mean unit variance 
-        #write the unit variance zero mean through equation
         #saving the values in
         #function to denormalize, *std and to add the u -- 
         
