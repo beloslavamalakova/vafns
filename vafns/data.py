@@ -49,32 +49,30 @@ class Fed(Dataset):
         self.validation = yields[-int(len(self.yields)*0.05):]
 
         self.data = self.train
+        self.data = torch.tensor(self.data)
 
-        self.train = (self.train - np.mean(self.train)) / np.std(self.train)
-        self.validation = (self.validation -
-                           np.mean(self.validation)) / np.std(self.validation)
-
-        def denormalizing(x):
-            x = x * np.std(x) + np.mean(x)
+        self.data = (self.data - torch.mean(self.data)) / torch.std(self.data)
 
         min_value = 3
         max_value = 8
 
-        torch.clamp(self.train, min_value, max_value)
-        self.train = (self.train - np.mean(self.train)) / np.std(self.train)
+        torch.clamp(self.data, min_value, max_value)
+        self.data = (self.data - torch.mean(self.data)) / torch.std(self.data)
 
         if test:
             self.data = self.validation
         else:
             self.data = self.train
 
-        self.data = self.data(denormalizing)
-
     def __len__(self):
         return len(self.data-self.t-self.num_predictions)
 
     def __getitem__(self, idx):
         return self.data[idx: idx + self.t], self.data[idx + self.t: idx + self.t + self.num_predictions]
+
+    @classmethod
+    def denormalizing(x):
+        x = x * torch.std(x) + torch.mean(x)    
 
 
 def main():
