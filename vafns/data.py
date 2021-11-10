@@ -2,9 +2,7 @@ import torch
 import pandas as pd
 import numpy as np
 from unicodedata import normalize
-import math
 from torch.utils.data import Dataset
-import matplotlib.pyplot as plt
 
 
 class Fed(Dataset):
@@ -51,10 +49,13 @@ class Fed(Dataset):
         self.data = self.train
         self.data = torch.tensor(self.data)
 
+        self.normalized = (self.data - torch.mean(self.data)
+                           ) / torch.std(self.data)
+
         self.data = (self.data - torch.mean(self.data)) / torch.std(self.data)
 
-        min_value = 3
-        max_value = 8
+        min_value = 0.06
+        max_value = 0.94
 
         torch.clamp(self.data, min_value, max_value)
         self.data = (self.data - torch.mean(self.data)) / torch.std(self.data)
@@ -72,7 +73,7 @@ class Fed(Dataset):
 
     @classmethod
     def denormalizing(x):
-        x = x * torch.std(x) + torch.mean(x)    
+        x = x * torch.std(x) + torch.mean(x)
 
 
 def main():
@@ -80,6 +81,7 @@ def main():
     device = torch.device("cuda:0" if use_cuda else "cpu")
 
     dataset = Fed()
+    dataset.head()
 
 
 if __name__ == "__main__":
