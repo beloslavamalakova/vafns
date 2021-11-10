@@ -16,26 +16,18 @@ def get_transition_model(transition_model, **kwargs):
 
 
 class BayesFilter(nn.Module):
-    def __init__(
-        self,
-            transition_model,  # parametrizes transition f(z_t, u_t, /betta_t)
+    def __init__(self, transition_model,  # parametrizes transition f(z_t, u_t, /betta_t)
         noise_dim,  # dim of w_t
         action_dim,  # dim of u_t
         latent_dim,  # dim of z_t; the number of nodes used
         input_dim,  # dim of x_t
-        hidden_size,
-        kl_weight,
-        annealing_steps=100,
-    ):
-
+        hidden_size, kl_weight, annealing_steps=100):
         super().__init__()
         self.noise_dim = noise_dim
         self.latent_dim = latent_dim
         self.input_dim = input_dim
         self.action_dim = action_dim
-
         self.kl_weight = kl_weight
-
         self.transition_model = transition_model
 
         # nn.Sequential MLP w/ relu

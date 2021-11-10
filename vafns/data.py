@@ -57,7 +57,7 @@ class Fed(Dataset):
         min_value = 0.06
         max_value = 0.94
 
-        torch.clamp(self.data, min_value, max_value)
+        self.data = torch.clamp(self.data, min_value, max_value)
         self.data = (self.data - torch.mean(self.data)) / torch.std(self.data)
 
         if test:
