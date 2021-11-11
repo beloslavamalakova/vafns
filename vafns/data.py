@@ -75,7 +75,7 @@ class Fed(Dataset):
 
     @classmethod
     def denormalizing(self, x):
-        x = x * self.std + self.mean
+        self.normalized = self.normalized * self.std + self.mean
 
 
 def main():
