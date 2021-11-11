@@ -74,16 +74,15 @@ class Fed(Dataset):
         return self.data[idx: idx + self.t], self.data[idx + self.t: idx + self.t + self.num_predictions]
 
     @classmethod
-    def denormalizing(self, x):
+    def denormalizing(self):
         self.normalized = self.normalized * self.std + self.mean
 
 
 def main():
-    use_cuda = torch.cuda.is_available()
-    device = torch.device("cuda:0" if use_cuda else "cpu")
+    device = "cuda:0" if torch.cuda.is_available() else "cpu"
 
     dataset = Fed()
-    dataset.head()
+    dataset.to(device)
 
 
 if __name__ == "__main__":
