@@ -49,15 +49,17 @@ class Fed(Dataset):
         self.data = self.train
         self.data = torch.tensor(self.data)
 
+        min_value = 3
+        max_value = 8
+
+        self.data = torch.clamp(self.data, min_value, max_value)
+
+        self.mean = torch.mean(self.data)
+        self.std = torch.std(self.data)
+
         self.normalized = (self.data - torch.mean(self.data)
                            ) / torch.std(self.data)
 
-        self.data = (self.data - torch.mean(self.data)) / torch.std(self.data)
-
-        min_value = 0.06
-        max_value = 0.94
-
-        self.data = torch.clamp(self.data, min_value, max_value)
         self.data = (self.data - torch.mean(self.data)) / torch.std(self.data)
 
         if test:
@@ -72,8 +74,8 @@ class Fed(Dataset):
         return self.data[idx: idx + self.t], self.data[idx + self.t: idx + self.t + self.num_predictions]
 
     @classmethod
-    def denormalizing(x):
-        x = x * torch.std(x) + torch.mean(x)
+    def denormalizing(self, x):
+        x = x * self.std + self.mean
 
 
 def main():
