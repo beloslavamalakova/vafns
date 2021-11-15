@@ -71,9 +71,9 @@ class Fed(Dataset):
 
     @classmethod
     def denormalizing(self):
-        for i in range(self.test):
+        for i in range(self.data):
             i = i * self.std + self.mean
-
+            return i
 
 def main():
     device = "cuda:0" if torch.cuda.is_available() else "cpu"

@@ -106,8 +106,8 @@ class BayesFilter(nn.Module):
         dists = [initial_w]  # dist of distribution
         for t in range(1, seq_len):
             noise_dist = self.inferece(
-                torch.cat([transition_parameters[t], z_t, u_t],
-                          dim=-1)  # into 1 dimension
+                torch.cat([transition_parameters[t], z_t, u_t ],
+                          dim= -1)  # into 1 dimension
             )
             dists.append(noise_dist)  # noise distribution
             w_t = self.generate_samples(
