@@ -21,7 +21,6 @@ class Fed(Dataset):
         yields = pd.read_html(
             "https://www.treasury.gov/resource-center/data-chart-center/interest-rates/pages/TextView.aspx?data=yieldAll", match='30 yr')
         yields = yields.applymap(clean)
-        yields.columns = yields.columns.to_series().apply(clean)
 
         col_type = {
             'Date': 'string',
@@ -43,10 +42,12 @@ class Fed(Dataset):
         yields = yields.replace(clean_dict, regex=True).replace(
             {'N/A': np.nan}).astype(col_type)
 
-        self.train = yields[:int(len(self.yields)*0.95)]
-        self.validation = yields[-int(len(self.yields)*0.05):]
+        if test:
+            self.data = yields[-int(len(yields)*0.05):]
+        else:
+            self.data = yields[:int(len(yields)*0.95)]
 
-        self.data = self.train
+        self.data = self.test
         self.data = torch.tensor(self.data)
 
         min_value = 3
@@ -62,11 +63,6 @@ class Fed(Dataset):
 
         self.data = (self.data - torch.mean(self.data)) / torch.std(self.data)
 
-        if test:
-            self.data = self.validation
-        else:
-            self.data = self.train
-
     def __len__(self):
         return len(self.data-self.t-self.num_predictions)
 
@@ -75,7 +71,8 @@ class Fed(Dataset):
 
     @classmethod
     def denormalizing(self):
-        self.normalized = self.normalized * self.std + self.mean
+        for i in range(self.test):
+            i = i * self.std + self.mean
 
 
 def main():
