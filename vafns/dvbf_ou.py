@@ -17,11 +17,11 @@ def get_transition_model(transition_model, **kwargs):
 
 class BayesFilter(nn.Module):
     def __init__(self, transition_model,  # parametrizes transition f(z_t, u_t, /betta_t)
-        noise_dim,  # dim of w_t
-        action_dim,  # dim of u_t
-        latent_dim,  # dim of z_t; the number of nodes used
-        input_dim,  # dim of x_t
-        hidden_size, kl_weight, annealing_steps=100):
+                 noise_dim,  # dim of w_t
+                 action_dim,  # dim of u_t
+                 latent_dim,  # dim of z_t; the number of nodes used
+                 input_dim,  # dim of x_t
+                 hidden_size, kl_weight, annealing_steps=100):
         super().__init__()
         self.noise_dim = noise_dim
         self.latent_dim = latent_dim
@@ -106,8 +106,8 @@ class BayesFilter(nn.Module):
         dists = [initial_w]  # dist of distribution
         for t in range(1, seq_len):
             noise_dist = self.inferece(
-                torch.cat([transition_parameters[t], z_t, u_t ],
-                          dim= -1)  # into 1 dimension
+                torch.cat([transition_parameters[t], z_t, u_t],
+                          dim=-1)  # into 1 dimension
             )
             dists.append(noise_dist)  # noise distribution
             w_t = self.generate_samples(
@@ -167,22 +167,20 @@ class TransitionModel(nn.Module):
 
 
 class OrnsteinUhlenbeckTransitionModel(TransitionModel):
-    def __init__(self, latent_dim, action_dim, noise_dim, hidden_size=16, **kwargs):
+    def __init__(
+        self, latent_dim, action_dim, noise_dim, hidden_size=16, mu=0, theta=0.15, sigma=0.20, **kwargs
+    ):
 
-        super().__init__(latent_dim=latent_dim, action_dim=action_dim, noise_dim=noise_dim)
+        super().__init__(
+            latent_dim=latent_dim, action_dim=action_dim, noise_dim=noise_dim, mu=mu, theta=theta, sigma=sigma)
+
         self.latent_dim = latent_dim
         self.action_dim = action_dim
         self.noise_dim = noise_dim
-        mu = 0
-        theta = 0.15
-        sigma = 0.2
-
-        def ornsteinuhlenbeck(self):
-            dx = self.theta * (self.mu - self.x)
-            dx = dx + self.sigma * torch.rndn(len(self.x))
-            self.x = self.x + dx
-            return self.x
-
+        self.mu = mu
+        self.theta=theta
+        self.sigma=sigma
+        
         self.net = nn.Sequential(
             nn.Linear(latent_dim + action_dim + noise_dim, hidden_size),
             nn.ReLU(),
@@ -190,8 +188,17 @@ class OrnsteinUhlenbeckTransitionModel(TransitionModel):
             nn.Softmax(),
         )
 
-    def forward():
+        
+    def forward(self, latent, action, noise):
         pass
+
+    @classmethod
+    def ornsteinuhlenbeck(self):
+        dx = self.theta * (self.mu - self.x)
+        dx = dx + self.sigma * torch.randn(len(dx))
+        x = dx
+        return x
+
 
     @staticmethod
     def _get_output(matrix, weight, feature):
