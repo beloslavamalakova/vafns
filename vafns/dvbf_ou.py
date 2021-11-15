@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 import math
+import numpy as np
 
 
 def get_transition_model(transition_model, **kwargs):
@@ -10,8 +11,8 @@ def get_transition_model(transition_model, **kwargs):
     transition_model = "".join(transition_model)
     return eval("{}TransitionModel".format(transition_model))
 
-# takes the transition model as a string, in the general case its divided by underscores which are reduced by the dict; ensures that below the transition model could be called without signs such as '_', and as a together written sequence of the two words 'Transition' and 'Model'
-
+# takes the transition model as a string, in the general case its divided by underscores which are reduced by the dict;
+# ensures that below the transition model could be called without signs such as '_', and as a together written sequence of the two words 'Transition' and 'Model'
 # kwargs is used for keyword arguments
 
 
@@ -106,7 +107,7 @@ class BayesFilter(nn.Module):
         dists = [initial_w]  # dist of distribution
         for t in range(1, seq_len):
             noise_dist = self.inferece(
-                torch.cat([transition_parameters[t], z_t, u_t],
+                torch.cat([transition_parameters[t], z_t, u[t]],
                           dim=-1)  # into 1 dimension
             )
             dists.append(noise_dist)  # noise distribution
@@ -144,7 +145,6 @@ class BayesFilter(nn.Module):
         return samples * std + mu
 
 
-# abstract class for Transition Models; all should have latent, action, noise dims
 class TransitionModel(nn.Module):
     def __init__(self, latent_dim, action_dim, noise_dim, **kwargs):
         super().__init__()
@@ -168,19 +168,26 @@ class TransitionModel(nn.Module):
 
 class OrnsteinUhlenbeckTransitionModel(TransitionModel):
     def __init__(
-        self, latent_dim, action_dim, noise_dim, hidden_size=16, mu=0, theta=0.15, sigma=0.20, **kwargs
+        self, latent_dim, action_dim, noise_dim, hidden_size=16, mu=0, theta=0.15, sigma=0.02, **kwargs
     ):
 
         super().__init__(
             latent_dim=latent_dim, action_dim=action_dim, noise_dim=noise_dim, mu=mu, theta=theta, sigma=sigma)
 
-        self.latent_dim = latent_dim
-        self.action_dim = action_dim
-        self.noise_dim = noise_dim
+        self.hidden_size = hidden_size
         self.mu = mu
-        self.theta=theta
-        self.sigma=sigma
-        
+        self.theta = theta
+        self.sigma = sigma
+
+        def OrnsteinUhlenbeck(r0, K, T, N):
+            dt = T/float(N)    
+            rates = [r0]
+            for i in range(N):
+                dr = K*(self.theta-rates[-1])*dt + self.sigma*np.sqrt(dt)*torch.randn()
+                rates.append(rates[-1] + dr) #add i! values to the vars
+                
+            return rates
+
         self.net = nn.Sequential(
             nn.Linear(latent_dim + action_dim + noise_dim, hidden_size),
             nn.ReLU(),
@@ -188,34 +195,5 @@ class OrnsteinUhlenbeckTransitionModel(TransitionModel):
             nn.Softmax(),
         )
 
-        
     def forward(self, latent, action, noise):
         pass
-
-    @classmethod
-    def ornsteinuhlenbeck(self):
-        dx = self.theta * (self.mu - self.x)
-        dx = dx + self.sigma * torch.randn(len(dx))
-        x = dx
-        return x
-
-
-    @staticmethod
-    def _get_output(matrix, weight, feature):
-        # matrix [num_matrices, dim1, dim2]
-        # weight [batch, num_matrices]
-        # feature [batch, dim1]
-        num_matrices, dim1, dim2 = matrix.size()
-        feature_matrix = torch.mm(weight, matrix.view(num_matrices, -1)).view(
-            -1, dim1, dim2
-        )
-        return torch.sum(feature_matrix * feature.unsqueeze(-1), dim=1)
-
-    def forward(self, latent, action, noise):
-        weights = self.net(torch.cat([latent, action], dim=-1))
-
-        latent_out = self._get_output(self.latent_matrix, weights, latent)
-        action_out = self._get_output(self.action_matrix, weights, action)
-        noise_out = self._get_output(self.noise_matrix, weights, noise)
-
-        return latent_out + action_out + noise_out
