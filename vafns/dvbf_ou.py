@@ -1,8 +1,6 @@
 import torch
 import torch.nn as nn
 import math
-import numpy as np
-
 
 def get_transition_model(transition_model, **kwargs):
     """Returns TransitionModel object."""
@@ -172,21 +170,31 @@ class OrnsteinUhlenbeckTransitionModel(TransitionModel):
     ):
 
         super().__init__(
-            latent_dim=latent_dim, action_dim=action_dim, noise_dim=noise_dim, mu=mu, theta=theta, sigma=sigma)
+            latent_dim=latent_dim, action_dim=action_dim, noise_dim=noise_dim)
 
         self.hidden_size = hidden_size
         self.mu = mu
         self.theta = theta
         self.sigma = sigma
 
-        def OrnsteinUhlenbeck(r0, K, T, N):
-            dt = T/float(N)    
+        def sigma_var():
+            self.sigma = torch.std(latent_dim)#prob wwith another var will think about it
+
+        def theta_var():
+            self.theta = torch.mean(latent_dim)
+
+        def OrnsteinUhlenbeck(r0, a, N):
+            #dr=a(b-r)dt + sigma.dt.Weiner
+            #equation for sigma as it represents the std -- higher sigma implies more randomness
+            #theta represents the long term mean level
+            #
+            a=0.2
+            N=20 #logical value
+            dt = 1/float(N)
             rates = [r0]
             for i in range(N):
-                dr = K*(self.theta-rates[-1])*dt + self.sigma*np.sqrt(dt)*torch.randn()
-                rates.append(rates[-1] + dr) #add i! values to the vars
-                
-            return rates
+                dr = a*(self.theta-rates[i])*dt + self.sigma*dt*torch.randn()
+            return dr
 
         self.net = nn.Sequential(
             nn.Linear(latent_dim + action_dim + noise_dim, hidden_size),
