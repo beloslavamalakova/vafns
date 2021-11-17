@@ -206,7 +206,7 @@ class OrnsteinUhlenbeckTransitionModel(TransitionModel):
 
         self.k = nn.Parameter(
             torch.randn(vasicek, noise_dim, latent_dim)
-            * (1.0 / math.sqrt(latent_dim * noise_dim))
+            * (1.0 / (latent_dim * noise_dim))
         )
 
         self.a = np.ln(2)/k
@@ -225,4 +225,9 @@ class OrnsteinUhlenbeckTransitionModel(TransitionModel):
         )
 
     def forward(self, latent, action, noise):
-        pass
+        weights = self.net(torch.cat([latent, action], self.vasicek))
+        latent_out = self.vasicek, latent
+        action_out = weights, action 
+        noise_out = noise
+
+        return latent_out + action_out + noise_out
