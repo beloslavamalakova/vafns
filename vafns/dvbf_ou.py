@@ -169,33 +169,40 @@ class TransitionModel(nn.Module):
 
 class OrnsteinUhlenbeckTransitionModel(TransitionModel):
     def __init__(
-        self, latent_dim, action_dim, noise_dim, a, b, delta, hidden_size=16, **kwargs
+        self, latent_dim, action_dim, noise_dim, vasicek, shortrate, hidden_size=16, **kwargs
     ):
 
         super().__init__(
             latent_dim=latent_dim, action_dim=action_dim, noise_dim=noise_dim)
 
         self.hidden_size = hidden_size
-        self.a = a
-        self.b = b
-        self.delta = delta
+        self.vasicek = vasicek
+        self.shortrate = shortrate
 
-        k = 15
-        self.a = np.ln(2)/k
+        k = nn.Parameter(
+            torch.randn(vasicek, noise_dim, latent_dim)
+            * (1.0 / math.sqrt(latent_dim * noise_dim))
+        )
+        a = np.ln(2)/k
 
-        # rt =  The interest rate given by the short rate.
-        rt = 0
-        
-        rt=torch.tensor(rt)
+        alpha = 0
+        beta = 0
+        dt = 0
+        r = 0
+        y = 0
+        x = 0
+
+        self.shortrate = (alpha + beta*r)*dt + x*(r ^ y)*torch.randn()
+        self.shortrate = torch.tensor(self.shortrate)
 
         t = Symbol('t')
         f = test  # value test
         dt = f*diff(t)
 
-        self.b = torch.mean(rt)
-        self.delta = torch.std(rt)
+        b = torch.mean(self.shortrate)
+        delta = torch.std(self.shortrate)
 
-        dr = a*(b - rt)*dt + self.delta*torch.randn()*dt
+        self.vasicek = a*(b - self.shortrate)*dt + delta*torch.randn()*dt
 
         self.net = nn.Sequential(
             nn.Linear(latent_dim + action_dim + noise_dim, hidden_size),
