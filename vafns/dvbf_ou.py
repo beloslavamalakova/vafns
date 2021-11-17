@@ -169,7 +169,7 @@ class TransitionModel(nn.Module):
 
 class OrnsteinUhlenbeckTransitionModel(TransitionModel):
     def __init__(
-        self, latent_dim, action_dim, noise_dim, vasicek, shortrate, hidden_size=16, **kwargs
+        self, latent_dim, action_dim, noise_dim, vasicek, a, b, delta, shortrate, k, dt, hidden_size=16, **kwargs
     ):
 
         super().__init__(
@@ -177,32 +177,45 @@ class OrnsteinUhlenbeckTransitionModel(TransitionModel):
 
         self.hidden_size = hidden_size
         self.vasicek = vasicek
+        self.a = a
+        self.b = b
+        self.delta = delta
         self.shortrate = shortrate
+        self.k = k
 
-        k = nn.Parameter(
-            torch.randn(vasicek, noise_dim, latent_dim)
-            * (1.0 / math.sqrt(latent_dim * noise_dim))
+        capm=nn.Parameter(
+            torch.randn(shortrate, noise_dim, latent_dim)
+            *()
         )
-        a = np.ln(2)/k
 
         alpha = 0
         beta = 0
-        dt = 0
-        r = 0
+        dmint = 0
+        riskfreerate = beta * capm 
+        riskfreerate = torch.tensor(riskfreerate)
         y = 0
-        x = 0
+        x = torch.var(riskfreerate ^ y)
 
-        self.shortrate = (alpha + beta*r)*dt + x*(r ^ y)*torch.randn()
+        self.shortrate = (alpha + riskfreerate)*dmint + x*torch.randn()
         self.shortrate = torch.tensor(self.shortrate)
+
 
         t = Symbol('t')
         f = test  # value test
-        dt = f*diff(t)
+        self.dt = f*diff(t)
 
-        b = torch.mean(self.shortrate)
-        delta = torch.std(self.shortrate)
+        self.k = nn.Parameter(
+            torch.randn(vasicek, noise_dim, latent_dim)
+            * (1.0 / math.sqrt(latent_dim * noise_dim))
+        )
 
-        self.vasicek = a*(b - self.shortrate)*dt + delta*torch.randn()*dt
+        self.a = np.ln(2)/k
+
+        self.b = torch.mean(self.shortrate)
+        self.delta = torch.std(self.shortrate)
+
+        self.vasicek = self.a*(self.b - self.shortrate) * \
+            self.dt + self.delta*torch.randn()*self.dt
 
         self.net = nn.Sequential(
             nn.Linear(latent_dim + action_dim + noise_dim, hidden_size),
