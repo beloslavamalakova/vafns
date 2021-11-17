@@ -168,7 +168,6 @@ class TransitionModel(nn.Module):
 
 
 class OrnsteinUhlenbeckTransitionModel(TransitionModel):
-    # dr=a(b-rt)dt + sigma.dt.Weiner
     def __init__(
         self, latent_dim, action_dim, noise_dim, a, b, delta, hidden_size=16, **kwargs
     ):
@@ -186,6 +185,8 @@ class OrnsteinUhlenbeckTransitionModel(TransitionModel):
 
         # rt =  The interest rate given by the short rate.
         rt = 0
+        
+        rt=torch.tensor(rt)
 
         t = Symbol('t')
         f = test  # value test
