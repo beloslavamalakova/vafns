@@ -3,6 +3,7 @@ import torch.nn as nn
 import math
 import numpy as np
 from sympy import *
+from vafns.fed_dataset import Dataset
 
 
 def get_transition_model(transition_model, **kwargs):
@@ -188,12 +189,23 @@ class OrnsteinUhlenbeckTransitionModel(TransitionModel):
             *()
         )
 
-        alpha = 0
+        alpha = nn.Parameter(
+            torch.randn(shortrate, noise_dim, latent_dim)
+            *(shortrate)
+        )
         beta = 0
-        dmint = 0
+
+        for dmint in range (1, t):
+            # t= 
+            pass
+
         riskfreerate = beta * capm 
         riskfreerate = torch.tensor(riskfreerate)
-        y = 0
+
+        y = nn.Parameter(
+            torch.randn(riskfreerate, noise_dim, latent_dim)
+        )
+
         x = torch.var(riskfreerate ^ y)
 
         self.shortrate = (alpha + riskfreerate)*dmint + x*torch.randn()
@@ -201,7 +213,8 @@ class OrnsteinUhlenbeckTransitionModel(TransitionModel):
 
 
         t = Symbol('t')
-        f = test  # value test
+        for f in range ():
+            pass
         self.dt = f*diff(t)
 
         self.k = nn.Parameter(
@@ -226,8 +239,8 @@ class OrnsteinUhlenbeckTransitionModel(TransitionModel):
 
     def forward(self, latent, action, noise):
         weights = self.net(torch.cat([latent, action], self.vasicek))
-        latent_out = self.vasicek, latent
-        action_out = weights, action 
-        noise_out = noise
+        latent_out = self.vasicek, weights, latent
+        action_out = self.vasicek, weights, action 
+        noise_out = self.vasicek, weights, noise
 
         return latent_out + action_out + noise_out

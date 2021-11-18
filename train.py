@@ -9,7 +9,7 @@ import torch
 
 import vafns.utils as utils
 from vafns.dvbf_ou import BayesFilter, get_transition_model
-from vafns.dataloader import Dataloader
+from vafns.fed_dataset import Fed
 
 # environment ; adapt train
 
@@ -133,9 +133,9 @@ def main(args):
 
     net.to(device)
 
-    episodes = Dataset(
+    episodes = Fed()
         t,
-        split,
+        num_predictions,
         cols,
     )
 
