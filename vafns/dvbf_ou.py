@@ -193,7 +193,7 @@ class OrnsteinUhlenbeckTransitionModel(TransitionModel):
             torch.randn(shortrate, noise_dim, latent_dim)
             *(shortrate)
         )
-        beta = 0
+        beta = torch.std()/torch.std() #secutiry returns by benchmark returns
 
         for dmint in range (1, t):
             # t= 
