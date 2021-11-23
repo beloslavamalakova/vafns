@@ -184,7 +184,8 @@ class OrnsteinUhlenbeckTransitionModel(TransitionModel):
         self.shortrate = shortrate
         self.k = k
 
-        capm=nn.Parameter(
+        capm=nn.Parameter( #a net with latent noise param to a vector with outputting the next capm+1 and so on
+            #capital asset prising model #small net taking the dims and puts them into weights,
             torch.randn(shortrate, noise_dim, latent_dim)
             *()
         )
@@ -193,9 +194,9 @@ class OrnsteinUhlenbeckTransitionModel(TransitionModel):
             torch.randn(shortrate, noise_dim, latent_dim)
             *(shortrate)
         )
-        beta = torch.std()/torch.std() #secutiry returns by benchmark returns
+        beta = torch.std()/torch.std() #secutiry returns by benchmark returns #nn.parameter starting point close to 0
 
-        for dmint in range (1, t):
+        for dmint in range (1, t): #def t and dt
             # t= 
             pass
 
@@ -238,6 +239,9 @@ class OrnsteinUhlenbeckTransitionModel(TransitionModel):
         )
 
     def forward(self, latent, action, noise):
+
+        r = r + self.vasicek
+        #
         weights = self.net(torch.cat([latent, action], self.vasicek))
         latent_out = self.vasicek, weights, latent
         action_out = self.vasicek, weights, action 
