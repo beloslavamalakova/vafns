@@ -1,6 +1,6 @@
 import numpy as np
 import torch
-from vafns.dvbf import BayesFilter
+from vafns.dvbf import TransitionModel
 
 
 def calc_forward_rate(price_t1, price_t2, time_difference):
@@ -298,3 +298,8 @@ class VasicekRates(InterestRates):
                             self.sigma*np.sqrt(dt)*dw[t, :]
 
         return r_array
+
+
+#class VasicekTRansitionModel inheriting the Transition model, init defining the vasicek rates object, used in the forward method
+#latent and noise--wiener
+#
