@@ -195,7 +195,7 @@ class InterestRates(object):
 
         return spot_rate
 
-class VasicekRates(InterestRates):
+class VasicekRates(InterestRates, TransitionModel):
     """
     Class for Vasicek risk-free interest rate short-rate model.
     Parameters
@@ -224,6 +224,7 @@ class VasicekRates(InterestRates):
                  terminal_period, current_period=0):
         InterestRates.__init__(self, initial_rate, terminal_period,
                                current_period)
+        TransitionModel.__init__(self, latent_dim=latent_dim, action_dim=action_dim, noise_dim=noise_dim)
         self.theta = theta
         self.mu = mu
         self.sigma = sigma
@@ -299,7 +300,10 @@ class VasicekRates(InterestRates):
 
         return r_array
 
+    def forward(self, latent, noise):
+        pass
+
+
 
 #class VasicekTRansitionModel inheriting the Transition model, init defining the vasicek rates object, used in the forward method
 #latent and noise--wiener
-#
