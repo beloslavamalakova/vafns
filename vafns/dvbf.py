@@ -119,7 +119,7 @@ class BayesFilter(nn.Module):
         dists = [initial_w]
         for t in range(1, seq_len):
             noise_dist = self.inferece(
-                torch.cat([transition_parameters[t], z_t, u[t]], dim=-1)
+                torch.cat([transition_parameters[t], z_t, actions[t]], dim=-1)
             )
             dists.append(noise_dist)
             w_t = self.generate_samples(*noise_dist.split(2, dim=-1))
