@@ -3,6 +3,7 @@ import pandas as pd
 import numpy as np
 from unicodedata import normalize
 from torch.utils.data import Dataset
+import matplotlib.pyplot as plt
 
 
 class Fed(Dataset):
@@ -50,6 +51,8 @@ class Fed(Dataset):
         self.data = self.test
         self.data = torch.tensor(self.data)
 
+        self.t = self.t+1
+
         min_value = 3
         max_value = 8
 
@@ -80,6 +83,9 @@ def main():
 
     dataset = Fed()
     dataset.to(device)
+
+    plt.figure(100, figsize=(12,5))
+    dataset.plot()
 
 
 if __name__ == "__main__":

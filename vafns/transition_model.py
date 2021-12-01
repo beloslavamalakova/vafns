@@ -195,7 +195,7 @@ class InterestRates(object):
 
         return spot_rate
 
-class VasicekRates(InterestRates, TransitionModel):
+class VasicekRatesTransitionModel(InterestRates, TransitionModel):
     """
     Class for Vasicek risk-free interest rate short-rate model.
     Parameters
