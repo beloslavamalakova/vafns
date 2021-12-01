@@ -1,6 +1,8 @@
 import numpy as np
 import torch
+from torch.nn.modules.activation import ReLU
 from vafns.dvbf import TransitionModel
+import torch.nn as nn
 
 
 def calc_forward_rate(price_t1, price_t2, time_difference):
@@ -221,13 +223,21 @@ class VasicekRatesTransitionModel(InterestRates, TransitionModel):
     """
 
     def __init__(self, initial_rate, theta, mu, sigma, latent_dim, noise_dim,
-                 terminal_period, current_period=0):
+                 terminal_period, r_array, hidden_size=16, current_period=0):
         InterestRates.__init__(self, initial_rate, terminal_period,
                                current_period)
         TransitionModel.__init__(self, latent_dim=latent_dim, noise_dim=noise_dim )
         self.theta = theta
         self.mu = mu
         self.sigma = sigma
+        self.r_array = r_array
+
+        self.net = nn.Sequential(
+            nn.Linear(latent_dim+noise_dim, hidden_size),
+            nn.ReLU(),
+            nn.Linear(hidden_size, r_array),
+            nn.Softmax()
+        )
 
     def calc_zero_coupon_price(self, r_t):
         """
@@ -283,25 +293,28 @@ class VasicekRatesTransitionModel(InterestRates, TransitionModel):
         """
 
         # Create initial array of interest rates:
-        r_array = self.setup_paths(dt, paths)
+        self.r_array = self.setup_paths(dt, paths)
 
         # Get time steps:
-        time_steps = r_array.shape[0]
+        time_steps = self.r_array.shape[0]
 
         # Create standard normal random variables:
         dw = create_wiener(time_steps, paths)
 
         # Loop through to create interest rate paths:
         for t in range(1, time_steps):
-            r_array[t, :] = r_array[t - 1, :] + \
+            self.r_array[t, :] = self.r_array[t - 1, :] + \
                             self.theta*(self.mu -
-                                        r_array[t - 1, :])*dt + \
+                                        self.r_array[t - 1, :])*dt + \
                             self.sigma*np.sqrt(dt)*dw[t, :]
 
-        return r_array
 
     def forward(self, latent, noise):
-        pass
+        weights = self.net(torch.cat([latent, noise]))
+        latent_out = self.r_array, weights, latent
+        noise_out = self.r_array, weights, noise 
+
+        return latent_out + noise_out
 
 
 
