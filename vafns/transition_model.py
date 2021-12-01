@@ -220,11 +220,11 @@ class VasicekRatesTransitionModel(InterestRates, TransitionModel):
         Defaults to 0.
     """
 
-    def __init__(self, initial_rate, theta, mu, sigma,
+    def __init__(self, initial_rate, theta, mu, sigma, latent_dim, noise_dim,
                  terminal_period, current_period=0):
         InterestRates.__init__(self, initial_rate, terminal_period,
                                current_period)
-        TransitionModel.__init__(self, latent_dim=latent_dim, action_dim=action_dim, noise_dim=noise_dim)
+        TransitionModel.__init__(self, latent_dim=latent_dim, noise_dim=noise_dim )
         self.theta = theta
         self.mu = mu
         self.sigma = sigma
