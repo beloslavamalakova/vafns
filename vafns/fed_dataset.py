@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 
 
 class Fed(Dataset):
-    def __init__(self, t, test=False, num_predictions=1):
+    def __init__(self, t=1, test=False, num_predictions=1):
 
         self.num_predictions = num_predictions
         self.test = test

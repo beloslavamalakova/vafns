@@ -197,6 +197,7 @@ class InterestRates(object):
 
         return spot_rate
 
+
 class VasicekRatesTransitionModel(InterestRates, TransitionModel):
     """
     Class for Vasicek risk-free interest rate short-rate model.
@@ -226,7 +227,8 @@ class VasicekRatesTransitionModel(InterestRates, TransitionModel):
                  terminal_period, r_array, hidden_size=16, current_period=0):
         InterestRates.__init__(self, initial_rate, terminal_period,
                                current_period)
-        TransitionModel.__init__(self, latent_dim=latent_dim, noise_dim=noise_dim )
+        TransitionModel.__init__(
+            self, latent_dim=latent_dim, noise_dim=noise_dim)
         self.theta = theta
         self.mu = mu
         self.sigma = sigma
@@ -263,8 +265,8 @@ class VasicekRatesTransitionModel(InterestRates, TransitionModel):
         # self.terminal_period):
         first_term = ((b_t - self.terminal_period +
                        self.current_period)*(
-                              (self.theta**2*self.mu) -
-                              0.5*self.sigma**2))/(self.theta**2)
+            (self.theta**2*self.mu) -
+            0.5*self.sigma**2))/(self.theta**2)
         second_term = (self.sigma**2) * (b_t**2) / (4.0*self.theta)
 
         a_t = np.exp(first_term-second_term)
@@ -304,19 +306,14 @@ class VasicekRatesTransitionModel(InterestRates, TransitionModel):
         # Loop through to create interest rate paths:
         for t in range(1, time_steps):
             self.r_array[t, :] = self.r_array[t - 1, :] + \
-                            self.theta*(self.mu -
-                                        self.r_array[t - 1, :])*dt + \
-                            self.sigma*np.sqrt(dt)*dw[t, :]
-
+                self.theta*(self.mu -
+                            self.r_array[t - 1, :])*dt + \
+                self.sigma*np.sqrt(dt)*dw[t, :]
 
     def forward(self, latent, noise):
         weights = self.net(torch.cat([latent, noise]))
+
         latent_out = self.r_array, weights, latent
-        noise_out = self.r_array, weights, noise 
+        noise_out = self.r_array, weights, noise
 
         return latent_out + noise_out
-
-
-
-#class VasicekTRansitionModel inheriting the Transition model, init defining the vasicek rates object, used in the forward method
-#latent and noise--wiener

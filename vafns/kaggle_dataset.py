@@ -8,19 +8,19 @@ import matplotlib.pyplot as plt
 
 class YieldCurves(Dataset):
 
-    def __init__(self, num_predictions, test, t):
-        super.__init__()
+    def __init__(self, num_predictions=1, test=False, t=1):
+        #super.__init__()
 
         self.num_predictions = num_predictions
         self.test = test
         self.t = t
 
         kaggle = pd.read_csv(
-            "../kaggle.csv", parse_dates=['date'], index_col='date')
+            "~/Projects/vafns/kaggle.csv", parse_dates=['Date'])
         kaggle['Date'] = pd.to_datetime(kaggle['Date'])
         kaggle = kaggle.set_index('Date')
 
-        yields = kaggle[['Date'-'30YR']:, :]
+        yields = kaggle[[int('Date'-'30YR')]:, :]
 
         if test:
             self.data = yields[-int(len(yields)*0.05):]
@@ -29,8 +29,6 @@ class YieldCurves(Dataset):
 
         self.data = self.test
         self.data = torch.tensor(self.data)
-
-        self.t = self.t+1
 
         min_value = 3
         max_value = 8
