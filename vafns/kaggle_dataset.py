@@ -20,7 +20,7 @@ class YieldCurves(Dataset):
         kaggle['Date'] = pd.to_datetime(kaggle['Date'])
         kaggle = kaggle.set_index('Date')
 
-        yields = kaggle[[int('Date'-'30YR')]:, :]
+        yields = kaggle[['Date', '1 yr', '30YR']:, :]
 
         if test:
             self.data = yields[-int(len(yields)*0.05):]

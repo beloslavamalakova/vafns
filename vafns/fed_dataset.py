@@ -21,7 +21,10 @@ class Fed(Dataset):
 
         yields = pd.read_html(
             "https://www.treasury.gov/resource-center/data-chart-center/interest-rates/pages/TextView.aspx?data=yieldAll", match='30 yr')
-        yields = yields.applymap(clean)
+        print("html loaded")
+        #yields = yields.applymap(clean)
+        #yields.columns = yields.columns.to_series().apply(clean)
+        print("applied data cleaning ")
 
         col_type = {
             'Date': 'string',
@@ -40,8 +43,9 @@ class Fed(Dataset):
         }
 
         clean_dict = {'%': '', '−': '-', '\(est\)': ''}
-        yields = yields.replace(clean_dict, regex=True).replace(
-            {'N/A': np.nan}).astype(col_type)
+        # yields = yields.replace(clean_dict, regex=True).replace(
+        #    {'N/A': np.nan}).astype(col_type)
+        print("data cleaned")
 
         if test:
             self.data = yields[-int(len(yields)*0.05):]
@@ -50,6 +54,7 @@ class Fed(Dataset):
 
         self.data = self.test
         self.data = torch.tensor(self.data)
+        print("data converted to tensors")
 
         self.t = self.t+1
 
@@ -57,12 +62,14 @@ class Fed(Dataset):
         max_value = 8
 
         self.data = torch.clamp(self.data, min_value, max_value)
+        print("data clamped")
 
         self.mean = torch.mean(self.data)
         self.std = torch.std(self.data)
 
         self.normalized = (self.data - torch.mean(self.data)
                            ) / torch.std(self.data)
+        print("data normalized")
 
         self.data = (self.data - torch.mean(self.data)) / torch.std(self.data)
 
@@ -78,13 +85,14 @@ class Fed(Dataset):
             i = i * self.std + self.mean
             return i
 
+
 def main():
     device = "cuda:0" if torch.cuda.is_available() else "cpu"
 
     dataset = Fed()
     dataset.to(device)
 
-    plt.figure(100, figsize=(12,5))
+    plt.figure(100, figsize=(12, 5))
     dataset.plot()
 
 
