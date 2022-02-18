@@ -222,7 +222,7 @@ class VasicekRatesTransitionModel(InterestRates, TransitionModel):
         Must be non-negative and less than terminal_period.
         Defaults to 0.
     """
-
+#test
     def __init__(self, initial_rate, theta, mu, sigma, latent_dim, noise_dim,
                  terminal_period, r_array, hidden_size=16, current_period=0):
         InterestRates.__init__(self, initial_rate, terminal_period,
