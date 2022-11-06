@@ -30,6 +30,8 @@ class YieldCurves(Dataset):
         self.data = self.test
         self.data = torch.tensor(self.data)
 
+        # to add pointers
+
         min_value = 3
         max_value = 8
 
