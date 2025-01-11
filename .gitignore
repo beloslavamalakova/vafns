@@ -1,5 +1,5 @@
 .idea/
-
+vafns/yield-curve-rates.csv
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
